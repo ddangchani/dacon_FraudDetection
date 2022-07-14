@@ -1,26 +1,40 @@
-import logging
-import torch.nn as nn
-import numpy as np
+from ssl import ALERT_DESCRIPTION_BAD_CERTIFICATE_HASH_VALUE
+import tensorflow as tf
+from keras import Model, layers # tensorflow base
+import keras
 
+class BaseNet(Model):
+    """
+    Base network for DeepSAD, using simple neural network
+    """
+    def __init__(self, rep_dim = 10):
+        """
+        rep_dim : representation dimensionality 
+                i.e. dim of the code layer or last layer
+        """
+        super().__init__() # keras.Model (부모클래스)
 
-class BaseNet(nn.Module):
-    """Base class for all neural networks."""
+        self.rep_dim = rep_dim
+        
+        self.snn = keras.Sequential([
+            layers.Dense(30, activation='selu'),
+            layers.Dense(rep_dim, activation='selu')
+        ])  # simple neural network
 
-    def __init__(self):
+    def call(self, x):
+        x = self.snn(x)
+        return x
+    
+class BaseNet_decoder(Model):
+    def __init__(self, rep_dim = 10):
         super().__init__()
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.rep_dim = None  # representation dimensionality, i.e. dim of the code layer or last layer
 
-    def forward(self, *input):
-        """
-        Forward pass logic
-        :return: Network output
-        """
-        raise NotImplementedError
-
-    def summary(self):
-        """Network summary."""
-        net_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        params = sum([np.prod(p.size()) for p in net_parameters])
-        self.logger.info('Trainable parameters: {}'.format(params))
-        self.logger.info(self)
+        self.rep_dim = rep_dim
+        self.desnn = keras.Sequential([
+            layers.Dense(30, activation='selu'),
+            layers.Dense(30, activation='sigmoid')
+        ]) # decoder
+    
+    def call(self, x):
+        x = self.desnn(x)
+        return x
