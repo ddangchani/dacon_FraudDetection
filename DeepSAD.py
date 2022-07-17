@@ -4,12 +4,8 @@ from sklearn.metrics import roc_auc_score, f1_score
 from base.base_net import BaseNet, BaseNet_decoder
 
 class DeepSAD():
-    """ class for DeepSAD
-    Attributes:
-        eta : control the effect of labeled set
-        c : hyperparameter center
-        model_name : name of neural net
-        model : neural network (phi)
+    """ 
+    class for DeepSAD
     """
 
     def __init__(self, config):
@@ -18,7 +14,6 @@ class DeepSAD():
         self.c = None
         self.eps = 1e-6
 
-        self.model_name = config['model_name']
         self.model = None
 
         self.trainer = None
@@ -109,8 +104,8 @@ class DeepSAD():
         print('Start Pretraining')
         self.train_dataset = train_dataset
         self.optimizer = keras.optimizers.adam_v2.Adam(
-            learning_rate=self.lr, beta_1=self.beta1, 
-            beta_2=self.beta2, epsilon=1e-08)
+            learning_rate=lr, beta_1=beta1, 
+            beta_2=beta2, epsilon=1e-08)
         self.set_decoder()
         for epoch in range(epochs):
             for inputs, labels in self.train_dataset:

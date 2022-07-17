@@ -17,6 +17,7 @@ class BaseNet(Model):
         self.rep_dim = rep_dim
         
         self.snn = keras.Sequential([
+            layers.Input(shape = (1,)),
             layers.Dense(30, activation='selu'),
             layers.Dense(rep_dim, activation='selu')
         ])  # simple neural network
