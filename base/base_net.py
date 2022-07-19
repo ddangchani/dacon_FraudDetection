@@ -7,7 +7,7 @@ class BaseNet(Model):
     """
     Base network for DeepSAD, using simple neural network
     """
-    def __init__(self, rep_dim = 10):
+    def __init__(self, rep_dim = 128):
         """
         rep_dim : representation dimensionality 
                 i.e. dim of the code layer or last layer
@@ -18,8 +18,12 @@ class BaseNet(Model):
         
         self.snn = keras.Sequential([
             layers.Input(shape = (1,)),
-            layers.Dense(30, activation='selu'),
-            layers.Dense(rep_dim, activation='selu')
+            layers.Dense(64, activation='linear'),
+            layers.BatchNormalization(),
+            layers.LeakyReLU(),
+            layers.Dense(128, activation='linear'),
+            layers.BatchNormalization(),
+            layers.LeakyReLU()
         ])  # simple neural network
 
     def call(self, x):
@@ -27,13 +31,15 @@ class BaseNet(Model):
         return x
     
 class BaseNet_decoder(Model):
-    def __init__(self, rep_dim = 10):
+    def __init__(self, rep_dim = 128):
         super().__init__()
 
         self.rep_dim = rep_dim
         self.desnn = keras.Sequential([
-            layers.Dense(30, activation='selu'),
-            layers.Dense(30, activation='sigmoid')
+            layers.Dense(64, activation='linear'),
+            layers.BatchNormalization(),
+            layers.LeakyReLU(),
+            layers.Dense(30, activation='linear')
         ]) # decoder
     
     def call(self, x):
